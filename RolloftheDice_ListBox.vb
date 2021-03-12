@@ -5,65 +5,88 @@ Option Explicit On
 'RCET0265
 'Spring 2021
 'Roll of the Dice
-'https://github.com/dylannelson58/RolloftheDice
+'https://github.com/dylannelson58/RolloftheDice_ListBox
 
 Public Class RolloftheDice_ListBox
-
-    Dim randomNumbers(10) As Integer
-    Dim header As Integer
-    Dim result As Integer
-
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Formatting()
 
     End Sub
 
-
-    Private Function GetRandomNumber(maxNumber As Integer) As Integer                               'function to get a random number for 2-12
-        Randomize(DateTime.Now.Millisecond)                                                         'randomizes the number down to the current milisecond
-        Return CInt(Math.Floor(Rnd() * (maxNumber + 1)))                                            'returns a random number equal to or less than the maxNumber + 1
-    End Function                                                                                    'ends function
-
-    Private Function GetSecondRandomNumber(maxNumber As Integer) As Integer                         'function to get a random number for 2-12
-        Randomize(DateTime.Now.Millisecond)                                                         'randomizes the number down to the current milisecond
-        Return CInt(Math.Floor(Rnd() * (maxNumber + 1)))                                            'returns a random number equal to or less than the maxNumber + 1
-    End Function
-
     Private Sub RollButton_Click(sender As Object, e As EventArgs) Handles RollButton.Click
+        DiceOutcomeListBox.Items.Clear()
+        Dim numberString As String
+        Dim randomNumbers(10) As Integer
+        Dim result As Integer
 
-        DiceOutcomeTextBox.Text = ""
-
-        For i = 0 To 1000                                                                           'executes 1000 rolls of the two dice
-            result = GetRandomNumber(5) + GetSecondRandomNumber(5)                                  'adds the two functions into a variable that can be called later
-            randomNumbers(result) += 1                                                              'adds 1 to the formatting ensuring that 0-1 is never recorded
+        For i = 0 To 1000
+            result = GetRandomNumber(5) + GetSecondRandomNumber(5)
+            randomNumbers(result) += 1
         Next
 
         Formatting()
 
+        For i = 0 To UBound(randomNumbers)
+            numberString &= CStr(randomNumbers(i)).PadLeft(6) & "|"
+        Next
+
+        DiceOutcomeListBox.Items.Add(numberString)
+
     End Sub
-
-
 
     Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
 
+        Dim numberString As String
+        Dim randomNumbers(10) As Integer
+        Dim result As Integer
+
+        DiceOutcomeListBox.Items.Clear()
+
+        For i = 0 To 1000
+            result = GetRandomNumber(5) + GetSecondRandomNumber(5)
+            randomNumbers(result) = 0
+        Next
+
         Formatting()
+
+        For i = 0 To UBound(randomNumbers)
+            numberString &= CStr(0).PadLeft(6) & "|"
+        Next
+
+        DiceOutcomeListBox.Items.Add(numberString)
     End Sub
 
     Public Function Formatting() As Integer
-        header = CInt((110 - 16) / 2)                                                                '77 because that is the amount of "-"s used 16 is the length of "roll of the dice" phrase /2 to center the header
-        DiceOutcomeTextBox.Text &= (StrDup(header, " ") & "Roll of the Dice" & StrDup(header, " ")) & vbNewLine & _            'Applying the header variable to the "roll of the dice"
-        (StrDup(110, "-")) & vbNewLine                                                                                                       'Adding dashes to format
 
-        For i = 2 To 12                                                                             '2-12 is the combinations of possible dice sum outcomes 
-            DiceOutcomeTextBox.Text &= (Str(i).PadLeft(8) & "|")                                                  'More formatting
-        Next                                                                                        'ends the for loop
 
-        DiceOutcomeTextBox.Text &= vbNewLine & (StrDup(110, "-")) & vbNewLine                                                                                         'ends the line
+        Dim diceNumbersString As String
+        Dim header As Integer
 
-        For i = 0 To UBound(randomNumbers)
-            DiceOutcomeTextBox.Text &= (CStr(randomNumbers(i)).PadLeft(8) & "|")
+        header = CInt((77 - 16) / 2)
+        DiceOutcomeListBox.Items.Add((StrDup(header, " ") & "Roll of the Dice" & StrDup(header, " ")))
+        DiceOutcomeListBox.Items.Add((StrDup(77, "-")))
+
+        For i = 2 To 12
+            diceNumbersString &= ((Str(i).PadLeft(6) & "|"))
         Next
+
+        DiceOutcomeListBox.Items.Add(diceNumbersString)
+
+        DiceOutcomeListBox.Items.Add((StrDup(77, "-")))
+
     End Function
 
+    Private Function GetRandomNumber(maxNumber As Integer) As Integer
+        Randomize(DateTime.Now.Millisecond)
+        Return CInt(Math.Floor(Rnd() * (maxNumber + 1)))
+    End Function
+
+    Private Function GetSecondRandomNumber(maxNumber As Integer) As Integer
+        Randomize(DateTime.Now.Millisecond)
+        Return CInt(Math.Floor(Rnd() * (maxNumber + 1)))
+    End Function
+    Private Sub ExitButton_Click(sender As Object, e As EventArgs) Handles ExitButton.Click
+        Me.Close()
+    End Sub
 End Class
